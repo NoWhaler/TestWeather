@@ -4,7 +4,7 @@ namespace Game.HorizontalSlidingArea.Model
 {
     public class HorizontalSlideModel
     {
-        public float FractionSpeed { get; set; } = 0.001f;
+        public float FractionSpeed { get; } = 0.001f;
 
         private float _currentScrollValue;
 
@@ -14,10 +14,14 @@ namespace Game.HorizontalSlidingArea.Model
 
         private HorizontalSlideView _horizontalSlideView;
 
+        private const float MIN_VALUE = 0f;
+
+        private const float MAX_VALUE = 1f;
+
         public HorizontalSlideModel(HorizontalSlideView horizontalSlideView)
         {
             _horizontalSlideView = horizontalSlideView;
-            _currentScrollValue = 0f;
+            _currentScrollValue = MIN_VALUE;
         }
 
         public float UpdateScrollValue()
@@ -27,18 +31,18 @@ namespace Game.HorizontalSlidingArea.Model
                 if (_isForward)
                 {
                     _currentScrollValue += FractionSpeed;
-                    if (_currentScrollValue >= 1f)
+                    if (_currentScrollValue >= MAX_VALUE)
                     {
-                        _currentScrollValue = 1f;
+                        _currentScrollValue = MAX_VALUE;
                         _isForward = false;
                     }
                 }
                 else
                 {
                     _currentScrollValue -= FractionSpeed;
-                    if (_currentScrollValue <= 0f)
+                    if (_currentScrollValue <= MIN_VALUE)
                     {
-                        _currentScrollValue = 0f;
+                        _currentScrollValue = MIN_VALUE;
                         _isForward = true;
                     }
                 }

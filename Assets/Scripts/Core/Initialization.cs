@@ -1,4 +1,10 @@
-﻿using Game.HeaderPanel.Model;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+using Core.Bootstrapper;
+using Game.HeaderPanel.Model;
 using Game.HeaderPanel.Presenter;
 using Game.HeaderPanel.View;
 using Game.HorizontalSlidingArea.Model;
@@ -11,6 +17,10 @@ using Game.SettingsPanel.Model;
 using Game.SettingsPanel.Presenter;
 using Game.SettingsPanel.View;
 using UnityEngine;
+using Core.Data;
+using Game.FooterPanel.View;
+using Game.WeatherCardsPanel.View;
+using Zenject;
 
 namespace Core
 {
@@ -24,36 +34,63 @@ namespace Core
 
         [SerializeField] private HorizontalSlideView _horizontalSlideView;
 
+        [SerializeField] private FooterView _footerView;
+
+        [SerializeField] private List<WeatherCardView> _weatherCardViews;
+
+        [Inject] [SerializeField] private Bootstrap _bootstrap;
+
         private void Awake()
         {
-            InitHeaderWindow();
-            InitHorizontalSlideView();
-            
-        }
-        private void InitHeaderWindow()
-        {
-            IntroductionModel introductionModel = new IntroductionModel(_introductionWindowView);
-            IntroductionWindowPresenter introductionWindowPresenter = new IntroductionWindowPresenter(introductionModel);
-            
-            _introductionWindowView.Init(introductionWindowPresenter);
-            
-            SettingsModel settingsModel = new SettingsModel(_settingsView);
-            SettingsPresenter settingsPresenter = new SettingsPresenter(settingsModel, introductionModel);
-            
-            _settingsView.Init(settingsPresenter);
-            
-            HeaderModel headerModel = new HeaderModel(_headerView);
-            HeaderPresenter headerPresenter = new HeaderPresenter(headerModel, settingsModel);
-            
-            _headerView.Init(headerPresenter);
+            InitViews();
+            LoadWeatherCards();
         }
 
-        private void InitHorizontalSlideView()
+        private void LoadWeatherCards()
+        {
+            for (int i = 0; i < _bootstrap.WeatherConfig.WeatherCards.Count; i++)
+            {
+                if (i < _weatherCardViews.Count)
+                {
+                    _weatherCardViews[i].WeatherCard = _bootstrap.WeatherConfig.WeatherCards[i];
+                    
+                    _weatherCardViews[i].SetView();
+                }
+            }
+        }
+        
+        private void InitViews()
         {
             HorizontalSlideModel horizontalSlideModel = new HorizontalSlideModel(_horizontalSlideView);
             HorizontalSlidePresenter horizontalSlidePresenter = new HorizontalSlidePresenter(horizontalSlideModel);
-
+            
+            IntroductionModel introductionModel = new IntroductionModel(_introductionWindowView);
+            IntroductionWindowPresenter introductionWindowPresenter = new IntroductionWindowPresenter(introductionModel, _bootstrap);
+            
+            SettingsModel settingsModel = new SettingsModel(_settingsView);
+            SettingsPresenter settingsPresenter = new SettingsPresenter(settingsModel, introductionModel, _bootstrap);
+            
+            HeaderModel headerModel = new HeaderModel(_headerView);
+            HeaderPresenter headerPresenter = new HeaderPresenter(headerModel, settingsModel, _bootstrap);
+            
+            _headerView.Init(headerPresenter);
             _horizontalSlideView.Init(horizontalSlidePresenter);
+            _introductionWindowView.Init(introductionWindowPresenter);
+            _settingsView.Init(settingsPresenter, _bootstrap.PanelsStateConfig.GetSoundValue(), _bootstrap.PanelsStateConfig.GetMusicValue());
+        }
+
+        private async void OnApplicationPause(bool pauseStatus)
+        {
+            if (pauseStatus)
+            {
+                SaveData();
+            }
+        }
+
+        private async Task SaveData()
+        {
+            await _bootstrap.WeatherConfig.SaveDataToFile(Path.Combine(Application.streamingAssetsPath, Constants.WeatherCardsFile));
+            await _bootstrap.PanelsStateConfig.SaveStates(Path.Combine(Application.streamingAssetsPath, Constants.PanelsStateFiles));
         }
     }
 }

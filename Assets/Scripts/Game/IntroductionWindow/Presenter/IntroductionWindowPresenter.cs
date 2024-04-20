@@ -1,3 +1,4 @@
+using Core.Bootstrapper;
 using Game.IntroductionWindow.Model;
 using UnityEngine;
 
@@ -6,10 +7,12 @@ namespace Game.IntroductionWindow.Presenter
     public class IntroductionWindowPresenter
     {
         private IntroductionModel _introductionModel;
+        private Bootstrap _bootstrap;
 
-        public IntroductionWindowPresenter(IntroductionModel introductionModel)
+        public IntroductionWindowPresenter(IntroductionModel introductionModel, Bootstrap bootstrap)
         {
             _introductionModel = introductionModel;
+            _bootstrap = bootstrap;
         }
 
         public void OnLinkButtonClick()
@@ -20,6 +23,7 @@ namespace Game.IntroductionWindow.Presenter
         public void OnExitButtonClick()
         {
             CloseWindow();
+            _bootstrap.PanelsStateConfig.SetIntroductionWindowState(false);
         }
 
         private void OpenURL(string link)
