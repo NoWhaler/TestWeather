@@ -1,6 +1,9 @@
 ﻿using Game.HeaderPanel.Model;
 using Game.HeaderPanel.Presenter;
 using Game.HeaderPanel.View;
+using Game.HorizontalSlidingArea.Model;
+using Game.HorizontalSlidingArea.Presenter;
+using Game.HorizontalSlidingArea.View;
 using Game.IntroductionWindow.Model;
 using Game.IntroductionWindow.Presenter;
 using Game.IntroductionWindow.View;
@@ -19,21 +22,14 @@ namespace Core
         
         [SerializeField] private SettingsView _settingsView;
 
+        [SerializeField] private HorizontalSlideView _horizontalSlideView;
+
         private void Awake()
         {
-            // InitIntroductionWindow();
             InitHeaderWindow();
-            InitSettingsWindow();
-        }
-
-        private void InitIntroductionWindow()
-        {
-            IntroductionModel introductionModel = new IntroductionModel(_introductionWindowView);
-            IntroductionWindowPresenter introductionWindowPresenter = new IntroductionWindowPresenter(introductionModel);
+            InitHorizontalSlideView();
             
-            _introductionWindowView.Init(introductionWindowPresenter);
         }
-
         private void InitHeaderWindow()
         {
             IntroductionModel introductionModel = new IntroductionModel(_introductionWindowView);
@@ -52,8 +48,12 @@ namespace Core
             _headerView.Init(headerPresenter);
         }
 
-        private void InitSettingsWindow()
-        { 
+        private void InitHorizontalSlideView()
+        {
+            HorizontalSlideModel horizontalSlideModel = new HorizontalSlideModel(_horizontalSlideView);
+            HorizontalSlidePresenter horizontalSlidePresenter = new HorizontalSlidePresenter(horizontalSlideModel);
+
+            _horizontalSlideView.Init(horizontalSlidePresenter);
         }
     }
 }
