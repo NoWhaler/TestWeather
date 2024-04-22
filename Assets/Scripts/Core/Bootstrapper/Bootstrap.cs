@@ -6,6 +6,8 @@ namespace Core.Bootstrapper
     public class Bootstrap : MonoBehaviour
     {
         public WeatherConfig WeatherConfig { get; set; }
+
+        public string CheckString { get; set; } = "";
         
         public PanelsStateConfig PanelsStateConfig { get; set; }
     }

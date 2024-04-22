@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Core.Bootstrapper;
 using Game.HeaderPanel.Model;
 using Game.HeaderPanel.Presenter;
@@ -17,7 +13,7 @@ using Game.SettingsPanel.Model;
 using Game.SettingsPanel.Presenter;
 using Game.SettingsPanel.View;
 using UnityEngine;
-using Core.Data;
+using Cysharp.Threading.Tasks;
 using Game.FooterPanel.View;
 using Game.WeatherCardsPanel.View;
 using Zenject;
@@ -38,15 +34,19 @@ namespace Core
 
         [SerializeField] private List<WeatherCardView> _weatherCardViews;
 
-        [Inject] [SerializeField] private Bootstrap _bootstrap;
+        [Inject] private Bootstrap _bootstrap;
 
         private void Awake()
         {
             InitViews();
-            LoadWeatherCards();
         }
 
-        private void LoadWeatherCards()
+        private async void Start()
+        {
+            await LoadWeatherCards();
+        }
+
+        private async UniTask LoadWeatherCards()
         {
             for (int i = 0; i < _bootstrap.WeatherConfig.WeatherCards.Count; i++)
             {
@@ -54,9 +54,11 @@ namespace Core
                 {
                     _weatherCardViews[i].WeatherCard = _bootstrap.WeatherConfig.WeatherCards[i];
                     
-                    _weatherCardViews[i].SetView();
+                    await _weatherCardViews[i].SetView();
                 }
             }
+
+            await _bootstrap.WeatherConfig.SaveDataToFile();
         }
         
         private void InitViews()
@@ -77,20 +79,6 @@ namespace Core
             _horizontalSlideView.Init(horizontalSlidePresenter);
             _introductionWindowView.Init(introductionWindowPresenter);
             _settingsView.Init(settingsPresenter, _bootstrap.PanelsStateConfig.GetSoundValue(), _bootstrap.PanelsStateConfig.GetMusicValue());
-        }
-
-        private async void OnApplicationPause(bool pauseStatus)
-        {
-            if (pauseStatus)
-            {
-                SaveData();
-            }
-        }
-
-        private async Task SaveData()
-        {
-            await _bootstrap.WeatherConfig.SaveDataToFile(Path.Combine(Application.streamingAssetsPath, Constants.WeatherCardsFile));
-            await _bootstrap.PanelsStateConfig.SaveStates(Path.Combine(Application.streamingAssetsPath, Constants.PanelsStateFiles));
         }
     }
 }

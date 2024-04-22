@@ -1,7 +1,9 @@
 using System.IO;
 using System.Threading.Tasks;
+using Core;
 using Core.Bootstrapper;
 using Core.Data;
+using Cysharp.Threading.Tasks;
 using Game.HeaderPanel.Model;
 using Game.SettingsPanel.Model;
 using UnityEngine;
@@ -23,9 +25,9 @@ namespace Game.HeaderPanel.Presenter
             _bootstrap = bootstrap;
         }
 
-        public void OnExitGameButtonClick()
+        public async void OnExitGameButtonClick()
         {
-            CloseApplication();
+            await CloseApplication();
         }
 
         public void OnOpenSettingsButtonClick()
@@ -34,10 +36,10 @@ namespace Game.HeaderPanel.Presenter
             _bootstrap.PanelsStateConfig.SetSettingsState(true);
         }
 
-        private async Task CloseApplication()
+        private async UniTask CloseApplication()
         {
-            await _bootstrap.WeatherConfig.SaveDataToFile(Path.Combine(Application.streamingAssetsPath, Constants.WeatherCardsFile));
-            await _bootstrap.PanelsStateConfig.SaveStates(Path.Combine(Application.streamingAssetsPath, Constants.PanelsStateFiles));
+            // await _bootstrap.WeatherConfig.SaveDataToFile();
+            // await _bootstrap.PanelsStateConfig.SaveStates();
             Application.Quit();
         }
     }

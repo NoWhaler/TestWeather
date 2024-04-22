@@ -9,7 +9,7 @@ namespace Game.ProgressBar
 
         public void UpdateFraction(float fraction)
         {
-            _progressBarFill.fillAmount = Mathf.Clamp(fraction / 0.9f, 0, 1);
+            _progressBarFill.fillAmount = fraction;
         }
     }
 }

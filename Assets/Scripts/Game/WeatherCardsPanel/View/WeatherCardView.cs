@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections;
 using System.Globalization;
+using System.Threading.Tasks;
 using Core;
+using Core.Bootstrapper;
 using Core.Data;
+using Cysharp.Threading.Tasks;
+using DG.Tweening.Plugins.Core.PathCore;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using Zenject;
+using Path = System.IO.Path;
 
 namespace Game.WeatherCardsPanel.View
 {
@@ -23,19 +29,22 @@ namespace Game.WeatherCardsPanel.View
 
         [SerializeField] private TMP_Text _temperatureText;
 
+        [Inject] private Bootstrap _bootstrap;
+
         private void OnEnable()
         {
-            _button.onClick.AddListener(DisableView
-                );
+            _button.onClick.AddListener(DisableView);
         }
 
-        private void DisableView()
+        private async void DisableView()
         {
             WeatherCard.IsVisible = false;
             gameObject.SetActive(false);
+
+            await _bootstrap.WeatherConfig.SaveDataToFile();
         }
         
-        public void SetView()
+        public async UniTask SetView()
         {
             if (!WeatherCard.IsVisible)
             {
@@ -43,35 +52,30 @@ namespace Game.WeatherCardsPanel.View
             }
             
             _locationText.text = WeatherCard.Name;
-            _temperatureText.text = WeatherCard.Main.Temp.ToString(CultureInfo.InvariantCulture);
-
-            StartCoroutine(GetSprite(WeatherCard.Weather[0].Icon, (sprite) =>
-            {
-                if (sprite != null)
-                {
-                    _weatherImage.sprite = sprite;
-                }
-            }));
+            _temperatureText.text = WeatherCard.Main.Temp.ToString();
+            
+            _weatherImage.sprite = await GetSprite(WeatherCard.Weather[0].Icon);
         }
         
-        private IEnumerator GetSprite(string icon, Action<Sprite> callback)
+        private async UniTask<Sprite> GetSprite(string icon)
         {
+            Sprite sprite = null;
+            
             UnityWebRequest www = UnityWebRequestTexture.GetTexture($"http://openweathermap.org/img/wn/{icon}@2x.png");
-            yield return www.SendWebRequest();
+            await www.SendWebRequest();
 
             if (www.result != UnityWebRequest.Result.Success) 
             {
                 Debug.Log(www.error);
-                callback?.Invoke(null);
             }
             else
             {
                 Texture2D myTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
                 
-                Sprite sprite = Sprite.Create(myTexture, new Rect(0, 0, myTexture.width, myTexture.height), Vector2.zero);
-                
-                callback?.Invoke(sprite);
+                sprite = Sprite.Create(myTexture, new Rect(0, 0, myTexture.width, myTexture.height), Vector2.zero);
             }
+
+            return sprite;
         }
     }
 }

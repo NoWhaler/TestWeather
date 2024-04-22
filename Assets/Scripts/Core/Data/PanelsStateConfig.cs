@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace Core.Data
 {
@@ -23,8 +24,10 @@ namespace Core.Data
             return this;
         }
         
-        public async Task SaveStates(string filePath)
+        public async UniTask SaveStates()
         {
+            var filePath = Path.Combine(Application.persistentDataPath, Constants.PanelsStateFile);
+            
             await ClearData(filePath);
             
             string json = JsonConvert.SerializeObject(this, Formatting.Indented);
@@ -32,7 +35,7 @@ namespace Core.Data
             await File.WriteAllTextAsync(filePath, json);
         }
         
-        public async Task ClearData(string filePath)
+        public async UniTask ClearData(string filePath)
         {
             await File.WriteAllTextAsync(filePath, String.Empty);
         }

@@ -1,6 +1,9 @@
+using System.IO;
+using Core;
 using Core.Bootstrapper;
 using Game.IntroductionWindow.Model;
 using Game.SettingsPanel.Model;
+using UnityEngine;
 
 namespace Game.SettingsPanel.Presenter
 {
@@ -17,16 +20,20 @@ namespace Game.SettingsPanel.Presenter
             _bootstrap = bootstrap;
         }
 
-        public void OnCloseButtonClick()
+        public async void OnCloseButtonClick()
         {
             _settingsModel.SetOpenState(false);
             _bootstrap.PanelsStateConfig.SetSettingsState(false);
+
+            await _bootstrap.PanelsStateConfig.SaveStates();
         }
 
-        public void OnIntroductionWindowButtonClick()
+        public async void OnIntroductionWindowButtonClick()
         {
             _introductionModel.SetOpenState(true);
             _bootstrap.PanelsStateConfig.SetIntroductionWindowState(true);
+            
+            await _bootstrap.PanelsStateConfig.SaveStates();
         }
 
         public void OnSoundButtonClick(bool state)
@@ -39,14 +46,18 @@ namespace Game.SettingsPanel.Presenter
             _settingsModel.SetMusicState(state);
         }
 
-        public void OnMusicValueChange(float value)
+        public async void OnMusicValueChange(float value)
         {
             _bootstrap.PanelsStateConfig.SetSoundValue(value);
+            
+            await _bootstrap.PanelsStateConfig.SaveStates();
         }
 
-        public void OnSoundValueChange(float value)
+        public async void OnSoundValueChange(float value)
         {
             _bootstrap.PanelsStateConfig.SetMusicValue(value);
+            
+            await _bootstrap.PanelsStateConfig.SaveStates();
         }
 
         public void SetValuesFromJson()

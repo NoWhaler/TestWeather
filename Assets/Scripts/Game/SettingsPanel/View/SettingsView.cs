@@ -1,3 +1,5 @@
+using Core;
+using DG.Tweening;
 using Game.SettingsPanel.Presenter;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -8,6 +10,8 @@ namespace Game.SettingsPanel.View
 {
     public class SettingsView : MonoBehaviour
     {
+        private bool _isOpen;
+        
         private SettingsPresenter _settingsPresenter;
 
         [SerializeField] private Button _closeButton;
@@ -71,7 +75,7 @@ namespace Game.SettingsPanel.View
 
         public void OnChangeSoundValue(float value)
         {
-            _soundMixer.SetFloat("SoundVolume", Mathf.Log10(value) * 20);
+            _soundMixer.SetFloat(Constants.SoundAudioMixer, Mathf.Log10(value) * 20);
             
             _soundImage.sprite = _soundSlider.value == 0 ? _soundSprites[1] : _soundSprites[0];
             
@@ -80,7 +84,7 @@ namespace Game.SettingsPanel.View
 
         public void OnChangeMusicValue(float value)
         {
-            _musicMixer.SetFloat("MusicVolume", Mathf.Log10(value) * 20);
+            _musicMixer.SetFloat(Constants.MusicAudioMixer, Mathf.Log10(value) * 20);
 
             _musicImage.sprite = _musicSlider.value == 0 ? _musicSprites[1] : _musicSprites[0];
             
@@ -98,7 +102,16 @@ namespace Game.SettingsPanel.View
 
         public void DisplayOrCloseWindow(bool state)
         {
-            gameObject.SetActive(state);
+            _isOpen = state;
+            
+            if (_isOpen)
+            {
+                gameObject.transform.DOScale(1f, 0.5f).SetEase(Ease.InOutSine);
+            }
+            else
+            {
+                gameObject.transform.DOScale(0f, 0.5f).SetEase(Ease.InOutSine);  
+            }
         }
 
         public void SwitchOnOffSound()

@@ -20,10 +20,12 @@ namespace Game.IntroductionWindow.Presenter
             OpenURL(_introductionModel.LinkedinURL);
         }
 
-        public void OnExitButtonClick()
+        public async void OnExitButtonClick()
         {
             CloseWindow();
             _bootstrap.PanelsStateConfig.SetIntroductionWindowState(false);
+
+            await _bootstrap.PanelsStateConfig.SaveStates();
         }
 
         private void OpenURL(string link)

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Core;
 using Core.Bootstrapper;
 using Core.Data;
 using UnityEngine;
@@ -21,15 +22,17 @@ namespace Game.FooterPanel.View
 
         private async void ReloadScene()
         {
-            await _bootstrap.WeatherConfig.ClearData(Path.Combine(Application.streamingAssetsPath, Constants.WeatherCardsFile));
+            await _bootstrap.WeatherConfig.ClearData(Path.Combine(Application.persistentDataPath, Constants.WeatherCardsFile));
 
-            await _bootstrap.PanelsStateConfig.ClearData(Path.Combine(Application.streamingAssetsPath,
-                Constants.PanelsStateFiles));
+            await _bootstrap.PanelsStateConfig.ClearData(Path.Combine(Application.persistentDataPath,
+                Constants.PanelsStateFile));
 
             foreach (var weatherCards in _bootstrap.WeatherConfig.WeatherCards)
             {
                 weatherCards.IsVisible = true;
             }
+
+            _bootstrap.PanelsStateConfig = new PanelsStateConfig().InitializeDefaultValues();
             
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
