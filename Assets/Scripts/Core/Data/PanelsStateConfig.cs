@@ -8,7 +8,7 @@ namespace Core.Data
 {
     public class PanelsStateConfig
     {
-        public PanelsStateData PanelsStateData { get; set; }
+        private PanelsStateData PanelsStateData { get; set; }
 
         public PanelsStateConfig InitializeDefaultValues()
         {
@@ -16,8 +16,8 @@ namespace Core.Data
             {
                 IntroductionWindowOpenState = true,
                 SettingsOpenState = false,
-                MusicValue = 1f,
-                SoundValue = 1f
+                MusicValue = Constants.MusicVolumeBaseValue,
+                SoundValue = Constants.SoundVolumeBaseValue
             };
 
             PanelsStateData = panelsStateData;

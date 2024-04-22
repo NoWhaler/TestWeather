@@ -1,5 +1,6 @@
 using System;
 using DG.Tweening;
+using Extensions;
 using Game.IntroductionWindow.Presenter;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +16,8 @@ namespace Game.IntroductionWindow.View
         [SerializeField] private Button _exitButton;
 
         private IntroductionWindowPresenter _introductionWindowPresenter;
+
+        private const float ANIMATION_DURATION = 0.4f;
         
         private void OnEnable()
         {
@@ -37,11 +40,11 @@ namespace Game.IntroductionWindow.View
                         
             if (_isOpen)
             {
-                gameObject.transform.DOScale(1f, 0.5f).SetEase(Ease.InOutSine);
+                gameObject.ScaleTo(1f, ANIMATION_DURATION);
             }
             else
             {
-                gameObject.transform.DOScale(0f, 0.5f).SetEase(Ease.InOutSine);  
+                gameObject.ScaleTo(0f, ANIMATION_DURATION);
             }
         }
     }

@@ -1,9 +1,8 @@
 using Core;
-using DG.Tweening;
+using Extensions;
 using Game.SettingsPanel.Presenter;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Game.SettingsPanel.View
@@ -38,6 +37,8 @@ namespace Game.SettingsPanel.View
 
         [SerializeField] private AudioMixer _musicMixer;
 
+        private const float ANIMATION_DURATION = 0.4f;
+        
         private void Start()
         {
             _closeButton.onClick.AddListener(() => 
@@ -55,22 +56,12 @@ namespace Game.SettingsPanel.View
 
         private bool IsSoundToggled()
         {
-            if (_soundImage.sprite == _soundSprites[0])
-            {
-                return true;
-            }
-            
-            return false;
+            return _soundImage.sprite == _soundSprites[0];
         }
 
         private bool IsMusicToggled()
         {
-            if (_musicImage.sprite == _musicSprites[0])
-            {
-                return true;
-            }
-
-            return false;
+            return _musicImage.sprite == _musicSprites[0];
         }
 
         public void OnChangeSoundValue(float value)
@@ -106,11 +97,11 @@ namespace Game.SettingsPanel.View
             
             if (_isOpen)
             {
-                gameObject.transform.DOScale(1f, 0.5f).SetEase(Ease.InOutSine);
+                gameObject.ScaleTo(1f, ANIMATION_DURATION);
             }
             else
             {
-                gameObject.transform.DOScale(0f, 0.5f).SetEase(Ease.InOutSine);  
+                gameObject.ScaleTo(0f, ANIMATION_DURATION);
             }
         }
 

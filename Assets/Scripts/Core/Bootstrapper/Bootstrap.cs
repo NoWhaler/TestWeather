@@ -7,8 +7,6 @@ namespace Core.Bootstrapper
     {
         public WeatherConfig WeatherConfig { get; set; }
 
-        public string CheckString { get; set; } = "";
-        
         public PanelsStateConfig PanelsStateConfig { get; set; }
     }
 }

@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using Core.Services;
+using UnityEngine;
 using Zenject;
 
-namespace Core.Services
+namespace Core.Installers
 {
     public class ServiceInstaller: MonoInstaller
     {

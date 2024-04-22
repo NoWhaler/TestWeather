@@ -7,5 +7,9 @@
         public static readonly string PanelsStateFile = "panelsState.json";
         public static readonly string MusicAudioMixer = "MusicVolume";
         public static readonly string SoundAudioMixer = "SoundVolume";
+
+        public static readonly float MusicVolumeBaseValue = 1f;
+        public static readonly float SoundVolumeBaseValue = 1f;
+        
     }
 }
