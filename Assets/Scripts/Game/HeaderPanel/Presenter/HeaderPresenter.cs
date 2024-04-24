@@ -30,10 +30,12 @@ namespace Game.HeaderPanel.Presenter
             await CloseApplication();
         }
 
-        public void OnOpenSettingsButtonClick()
+        public async void OnOpenSettingsButtonClick()
         {
             _settingsModel.SetOpenState(true);
             _bootstrap.PanelsStateConfig.SetSettingsState(true);
+
+            await _bootstrap.PanelsStateConfig.SaveStates();
         }
 
         private async UniTask CloseApplication()

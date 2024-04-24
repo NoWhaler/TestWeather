@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Core.Bootstrapper;
 using Game.HeaderPanel.Model;
 using Game.HeaderPanel.Presenter;
@@ -16,7 +17,9 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using Game.FooterPanel.View;
 using Game.WeatherCardsPanel.View;
+using TMPro;
 using Zenject;
+using Application = UnityEngine.Device.Application;
 
 namespace Core
 {
@@ -35,6 +38,8 @@ namespace Core
         [SerializeField] private List<WeatherCardView> _weatherCardViews;
 
         [Inject] private Bootstrap _bootstrap;
+
+        [SerializeField] private TMP_Text _text;
 
         private void Awake()
         {

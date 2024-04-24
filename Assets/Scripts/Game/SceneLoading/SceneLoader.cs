@@ -8,9 +8,11 @@ using Core.Services;
 using Cysharp.Threading.Tasks;
 using Game.ProgressBar;
 using Newtonsoft.Json;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using Zenject;
 using Button = UnityEngine.UI.Button;
 
@@ -26,53 +28,40 @@ namespace Game.SceneLoading
 
         [Inject] private HttpService _httpService;
 
-        private async void Awake()
+        private void Awake()
         {
             CreateWeatherCardsDataConfig();
             CreatePanelsDataConfig();
 
             _loadButton.onClick.AddListener(LoadSecondSceneCo);
         }
-
-        private async UniTask LoadDataToFile(string fileName)
+        
+        private async UniTask LoadWeatherCardsDataToFile(string fileName)
         {
             var filePath = Path.Combine(Application.persistentDataPath, fileName);
-            byte[] data = Encoding.UTF8.GetBytes("");
-            
-#if UNITY_ANDROID && !UNITY_EDITOR
+   
+            string loadedJsonString = await File.ReadAllTextAsync(filePath);
 
-                using (UnityWebRequest www = UnityWebRequest.Get(filePath))
-                {
-                    await www.SendWebRequest();
-
-                    if (www.result == UnityWebRequest.Result.ConnectionError || 
-                        www.result == UnityWebRequest.Result.ProtocolError)
-                    {
-                        Debug.LogError("Error: " + www.result);
-                    }
-                    else
-                    {
-                        if (www.downloadHandler != null)
-                        {
-                            data = www.downloadHandler.data;
-                        }
-                        else
-                        {
-                            Debug.LogWarning("Download handler is null");
-                        }
-                    }
-                }
-#else
-                data = await File.ReadAllBytesAsync(filePath);
-#endif
-           
-            string loadedJsonString = "";
-                        
-            if (data.Length > 0)
+            try
             {
-                loadedJsonString = Encoding.UTF8.GetString(data);
+                if (loadedJsonString != "")
+                {
+                    _bootstrap.WeatherConfig = JsonConvert.DeserializeObject<WeatherConfig>(loadedJsonString);
+                }
+               
             }
-            
+            catch (Exception e)
+            {
+                Debug.LogError("Failed to deserialize items from JSON: " + e.Message);
+            }
+        }
+
+        private async UniTask LoadPanelsDataToFile(string fileName)
+        {
+            var filePath = Path.Combine(Application.persistentDataPath, fileName);
+   
+            string loadedJsonString = await File.ReadAllTextAsync(filePath);
+
             try
             {
                 if (loadedJsonString != "")
@@ -89,35 +78,36 @@ namespace Game.SceneLoading
 
         private async UniTask LoadFilesData()
         {
-            await LoadDataToFile(Constants.PanelsStateFile);
-            await LoadDataToFile(Constants.WeatherCardsFile);
-            
+            await LoadPanelsDataToFile(Constants.PanelsStateFile);
+            await LoadWeatherCardsDataToFile(Constants.WeatherCardsFile);
+
             var weatherResponses = await _httpService.GetWeather(Constants.WeatherLocations);
             await _bootstrap.WeatherConfig.UpdateWeatherCard(weatherResponses);
         }
 
-        private void CreateWeatherCardsDataConfig()
+        private async void CreateWeatherCardsDataConfig()
         {
-            
             var cardsFilePath = Path.Combine(Application.persistentDataPath, Constants.WeatherCardsFile);
-            
+
             if (!File.Exists(cardsFilePath))
             {
-                File.Create(cardsFilePath).Dispose();
+                await File.Create(cardsFilePath).DisposeAsync();
                 
                 _bootstrap.WeatherConfig = new WeatherConfig().InitializeDefaultCards();
+                await _bootstrap.WeatherConfig.SaveDataToFile();
             }
         }
 
-        private void CreatePanelsDataConfig()
+        private async void CreatePanelsDataConfig()
         {
             var panelsStatesFilePath = Path.Combine(Application.persistentDataPath, Constants.PanelsStateFile);
                         
             if (!File.Exists(panelsStatesFilePath))
             {
-                File.Create(panelsStatesFilePath).Dispose();
+                await File.Create(panelsStatesFilePath).DisposeAsync();
 
                 _bootstrap.PanelsStateConfig = new PanelsStateConfig().InitializeDefaultValues();
+                await _bootstrap.PanelsStateConfig.SaveStates();
             }
         }
 

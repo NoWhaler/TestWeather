@@ -8,7 +8,7 @@ namespace Core.Data
 {
     public class PanelsStateConfig
     {
-        private PanelsStateData PanelsStateData { get; set; }
+        public PanelsStateData PanelsStateData { get; set; }
 
         public PanelsStateConfig InitializeDefaultValues()
         {
